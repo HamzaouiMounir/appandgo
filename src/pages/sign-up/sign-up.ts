@@ -1,0 +1,62 @@
+import { Component } from '@angular/core';
+import {FormBuilder,FormGroup,Validators,FormControl} from '@angular/forms';
+import { NavController, NavParams , ToastController, LoadingController} from 'ionic-angular';
+import { ApiService } from './../../providers/api-service';
+
+/*
+  Generated class for the SignUp page.
+
+  See http://ionicframework.com/docs/v2/components/#navigation for more info on
+  Ionic pages and navigation.
+*/
+@Component({
+  selector: 'page-sign-up',
+  templateUrl: 'sign-up.html'
+})
+export class SignUpPage {
+  user={};
+  registrationForm:FormGroup;
+
+
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    public toastCtrl: ToastController,
+    private API:ApiService,
+    public loader:LoadingController,
+    public formBuilder:FormBuilder) {
+      //form validation with formBuilder
+      this.registrationForm=this.formBuilder.group({
+        name:['',Validators.compose([Validators.required,Validators.minLength(3)])],
+        email:['',Validators.compose([Validators.required])],
+        password:['',Validators.required],
+        password_confirmation:['',Validators.required]
+      });
+    }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad SignUpPage');
+  }
+  register(){
+    alert(this.registrationForm.valid);
+    this.user={
+      name:this.registrationForm.controls['name'].value,
+      email:this.registrationForm.controls['email'].value,
+      password:this.registrationForm.controls['password'].value,
+      password_confirmation:this.registrationForm.controls['password_confirmation'].value,
+    }
+
+    console.log(this.user);
+    /*let reg= this.API.all('auth').all('register');
+    reg.post(this.user).subscribe((registrationResponse)=>{
+      alert(JSON.stringify(registrationResponse));
+    });*/
+  }
+  presentToast() {
+    let toast = this.toastCtrl.create({
+      message: 'Connexion établie avec succée',
+      duration: 3000
+    });
+    toast.present();
+  }
+
+}
