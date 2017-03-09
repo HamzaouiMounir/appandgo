@@ -11,7 +11,7 @@ export class ApiService extends Restangular{
   //Restangular Configuration
  static RestangularConfigFactory (RestangularProvider) {
 
- RestangularProvider.setBaseUrl('http://appandgo-mounir-customadmin.herokuapp.com/api/');
+ RestangularProvider.setBaseUrl('http://192.168.1.12:3000/api/');
  RestangularProvider.setDefaultHeaders({'Content-Type': 'application/json'});
  // This function must return observable
  var refreshAccesstoken = function () {
