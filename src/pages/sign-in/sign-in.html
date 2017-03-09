@@ -30,10 +30,11 @@
     </ion-list>
     <div padding>
       <button ion-button type="submit" full color="secondary">Connexion</button>
-      <br>
-      <button ion-button full>Me connecter avec Facebook</button>
+
+
     </div>
   </form>
+  <button ion-button (click)="facebookOath()" full>Me connecter avec Facebook</button>
   <a href="#" left (click)="goToRegistration()">J'ai déjà un compte</a>
   <a href="#" right (click)="goToTermsAndConditions()">Termes et Conditions</a>
 
