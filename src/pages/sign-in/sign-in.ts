@@ -78,7 +78,7 @@ export class SignInPage {
              Facebook.api("/me?fields=name,gender,age_range,first_name,last_name", params)
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
-               alert(JSON.stringify(user));
+               console.log(JSON.stringify(user));
 
                 // let authParams={provider:'facebook',oauthUser:user}
                  // alert("PROVIDER ID SENT TO API"+JSON.stringify(user));
