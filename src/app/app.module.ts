@@ -6,7 +6,8 @@ import {SignUpPage} from '../pages/sign-up/sign-up';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../providers/api-service';
 import { RestangularModule } from 'ng2-restangular';
-
+import {Ng2UiAuthModule} from 'ng2-ui-auth';
+import {SatellizerService} from '../providers/satellizer-service';
 @NgModule({
   declarations: [
     MyApp,
@@ -15,7 +16,8 @@ import { RestangularModule } from 'ng2-restangular';
   ],
   imports: [
     IonicModule.forRoot(MyApp),
-     RestangularModule.forRoot(ApiService.RestangularConfigFactory)
+     RestangularModule.forRoot(ApiService.RestangularConfigFactory),
+     Ng2UiAuthModule.forRoot(SatellizerService)
   ],
   bootstrap: [IonicApp],
   entryComponents: [

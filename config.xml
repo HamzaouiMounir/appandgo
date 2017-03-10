@@ -40,4 +40,8 @@
         <variable name="APP_ID" value="1368002846591785" />
         <variable name="APP_NAME" value="CustomAdminAppandGo" />
     </plugin>
+    <plugin name="cordova-plugin-inappbrowser" spec="~1.7.0" />
+    <plugin name="cordova-plugin-googleplus" spec="~5.1.1">
+        <variable name="REVERSED_CLIENT_ID" value="320931197193-t4tdc2b6655e4cb8bh1mok8qqse2alic.apps.googleusercontent.com" />
+    </plugin>
 </widget>

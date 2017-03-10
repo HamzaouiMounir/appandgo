@@ -3,8 +3,10 @@ import { NavController, NavParams, ToastController, LoadingController} from 'ion
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
 import {Facebook} from 'ionic-native';
-
 import {SignUpPage} from '../sign-up/sign-up';
+import {AuthService} from 'ng2-ui-auth';
+import { GooglePlus } from 'ionic-native';
+
 /*
   Generated class for the SignIn page.
 
@@ -21,7 +23,13 @@ export class SignInPage {
  error='';
  connected=false;
  FB_APP_ID: number = 1368002846591785;
-  constructor(public navCtrl: NavController, public navParams: NavParams,public toastCtrl: ToastController,private API:ApiService,public aclService:AclService, public loader:LoadingController) {
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    public toastCtrl: ToastController,
+    private API:ApiService,
+    public aclService:AclService,
+    public loader:LoadingController,
+    public auth:AuthService) {
     Facebook.browserInit(this.FB_APP_ID);
   }
 
@@ -74,21 +82,7 @@ export class SignInPage {
 
                 // let authParams={provider:'facebook',oauthUser:user}
                  // alert("PROVIDER ID SENT TO API"+JSON.stringify(user));
-                 let callback=this.API.all('auth').one('facebook',accessToken);
-                 //alert(JSON.stringify(callback));
-                 callback.get().subscribe(
-                   (callbackResponse)=>{
-                     alert("success");
-                     alert(JSON.stringify(callbackResponse.data));
-                    // this.output=callbackResponse.data;
-                     /*if(!callbackResponse.errors){
-                         //alert('Laravel conn');
-                         alert(JSON.stringify(callbackResponse.data));
-
-                     }*/
-
-                   }
-                 );
+                 this.oauthLoginApiRequest('facebook',accessToken);
 
 
                  /*
@@ -197,6 +191,33 @@ export class SignInPage {
         this.statusChangeCallback(response)
       }
       );
+  }
+  //Google + login native
+  googlePlusNativeConnect(){
+    GooglePlus.login()
+      .then(res => alert("GOOGLE RESPONSE"+JSON.stringify(res)))
+      .catch(err => console.error(err));
+  }
+  //This function use the sattelizer Oauth operation using the provider's name as a param
+  sattelizerOauth(provider){
+      this.auth.authenticate(provider).subscribe({
+                next: (user) => {
+                  console.log(JSON.stringify(user))
+                },
+                error: (err: any) => alert("error"+err),
+                complete: () => console.log('connected')
+            });
+
+  }
+  //this private function will be called after Oauth Facebook or Google connexion to send the accessToken to the Laravel API
+  private oauthLoginApiRequest(providerName,accessToken){
+    let callback=this.API.all('auth').one(providerName,accessToken);
+        callback.get().subscribe(
+          (callbackResponse)=>{
+            alert("Connected on "+providerName+" provider");
+            alert(JSON.stringify(callbackResponse.data));
+          }
+        );
   }
 
 
