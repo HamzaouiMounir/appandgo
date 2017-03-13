@@ -34,6 +34,7 @@ export class SignInPage {
     public auth:AuthService,
     private gplusService:GooglePlusService) {
     Facebook.browserInit(this.FB_APP_ID);
+    //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
   }
 
   ionViewDidLoad() {
