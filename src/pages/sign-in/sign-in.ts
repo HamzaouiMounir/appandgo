@@ -181,26 +181,43 @@ export class SignInPage {
       }
       );
   }
-  //Google+ login native
+  //Google+ login native Oauth
   googlePlusNativeConnect(){
     this.connected=true;
+    //We use the login static function of GooglePlus 
+    /**
+     * options in this function are:
+     * scopes
+     * webClientId: which is the client id attached to a web application in your Google console's project
+     * offline mode is a configuration used with the webClientId to get the serverAuthCode and the tokenId from the serverAuthCode
+     */
      GooglePlus.login({
       "scopes":"",
       "webClientId": "6996723272-kiv5cpplhama4ie93ubi0vdfmpmr43lo.apps.googleusercontent.com",
       "offline": true
     }).then((data) => {
-        alert(JSON.stringify(data));
-        alert("ServerAuthCode to send to the api= "+data.serverAuthCode);
-        
-
+        /*alert(JSON.stringify(data));
+        alert("ServerAuthCode to send to the api= "+data.serverAuthCode);*/
+        /**
+         * Data response contains multiple field 
+         * data.email          // 'hamzaouimounir@example.com'
+         * data.userId         // user id
+         * data.displayName    // 'Mounir Hamzaoui'
+         * data.familyName     // 'Hamzaoui'
+         * data.givenName      // 'Mounir'
+         * data.imageUrl       // 'http://link-to-my-profilepic.google.com'
+         * data.idToken        // idToken that can be exchanged to verify user identity.
+         * data.serverAuthCode // Auth code that can be exchanged for an access token and refresh token for offline access
+         */
+        //GooglePlusService is a local provider that emit a HTTP/POST request to this endpoint https://www.googleapis.com/oauth2/v4/token in order to get the accessToken using serverAuthCode
         this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
-         data => {alert("data=> "+JSON.stringify(data))
+         data => {
+        //retreiving the accessToken in this response and send it to the oauthLoginApiRequest which is a function that call the Laravel API endpoint using the provider name ='google' and the accessToken param
                 this.oauthLoginApiRequest('google',data.access_token);
         },
         err => alert("Err=> "+err),
         () => alert('Success Connexion')
       )
-      //  this.oauthLoginApiRequest('google',data.idToken);
       }).catch((data) => {
         alert("ERROR"+JSON.stringify(data));
       });
@@ -211,9 +228,11 @@ export class SignInPage {
       alert('disconnected');
        this.connected=false;
     });
+
   }
   //This function use the sattelizer Oauth operation using the provider's name as a param
   sattelizerOauth(provider){
+    //you can use this method till 20th april then the integrated based Oauth for Google Plus will be blocked
       this.auth.authenticate(provider).subscribe({
                 next: (user) => {
                   console.log(JSON.stringify(user))

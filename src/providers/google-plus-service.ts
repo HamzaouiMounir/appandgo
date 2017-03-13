@@ -12,9 +12,8 @@ import {Observable} from 'rxjs/Rx';
 export class GooglePlusService {
 
   
-  constructor(public http: Http) {
-    console.log('Hello GooglePlusService Provider');
-  }
+  constructor(public http: Http) {  }
+  //GooglePlusService is a local provider that emits a HTTP/POST request via getAccessTokenFromServerAuthCode method to this endpoint https://www.googleapis.com/oauth2/v4/token in order to get the accessToken using serverAuthCode
   getAccessTokenFromServerAuthCode(serverAuthCode):Observable<any>{
     let headers = new Headers();
     headers.append('Content-Type','application/x-www-form-urlencoded')
