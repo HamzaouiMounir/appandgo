@@ -82,6 +82,7 @@ export class SignInPage {
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
                console.log(JSON.stringify(user));
+               
                  this.oauthLoginApiRequest('facebook',accessToken);
              })
            }, (error)=>{
@@ -189,19 +190,22 @@ export class SignInPage {
       "offline": true
     }).then((data) => {
         alert(JSON.stringify(data));
-        alert(data.accessToken);
-        this.idToken=data.idToken;
+        alert("ServerAuthCode to send to the api= "+data.serverAuthCode);
+        
+
         this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
-         data => alert("data=> "+data),
+         data => {alert("data=> "+JSON.stringify(data))
+                this.oauthLoginApiRequest('google',data.access_token);
+        },
         err => alert("Err=> "+err),
-        () => alert('yay')
-        )
-       // this.oauthLoginApiRequest('google',data.idToken);
+        () => alert('Success Connexion')
+      )
+      //  this.oauthLoginApiRequest('google',data.idToken);
       }).catch((data) => {
         alert("ERROR"+JSON.stringify(data));
       });
   }
-  //Logout from Google 
+  //Logout from Google
   disconnectFromGoogle(){
     GooglePlus.logout().then(()=>{
       alert('disconnected');
