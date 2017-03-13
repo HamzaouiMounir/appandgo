@@ -1,3 +1,4 @@
+import { GooglePlusService } from './../providers/google-plus-service';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
@@ -25,6 +26,6 @@ import {SatellizerService} from '../providers/satellizer-service';
     SignInPage,
     SignUpPage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService]
+  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,GooglePlusService]
 })
 export class AppModule {}

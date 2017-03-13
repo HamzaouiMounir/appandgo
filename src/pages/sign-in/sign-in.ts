@@ -1,3 +1,4 @@
+import { GooglePlusService } from './../../providers/google-plus-service';
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, LoadingController} from 'ionic-angular';
 import { AclService } from 'angular2-acl';
@@ -22,6 +23,7 @@ export class SignInPage {
  userinfo={};
  error='';
  connected=false;
+ idToken='';
  FB_APP_ID: number = 1368002846591785;
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -29,7 +31,8 @@ export class SignInPage {
     private API:ApiService,
     public aclService:AclService,
     public loader:LoadingController,
-    public auth:AuthService) {
+    public auth:AuthService,
+    private gplusService:GooglePlusService) {
     Facebook.browserInit(this.FB_APP_ID);
   }
 
@@ -79,22 +82,8 @@ export class SignInPage {
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
                console.log(JSON.stringify(user));
-
-                // let authParams={provider:'facebook',oauthUser:user}
-                 // alert("PROVIDER ID SENT TO API"+JSON.stringify(user));
                  this.oauthLoginApiRequest('facebook',accessToken);
-
-
-                 /*
-                 In case of need these code below will use a post method to send OauthProviderId and the provider to the api
-                 this.service.facebookAuthPOSTHttp(user.id).subscribe(
-                     (resp)=>{
-                         alert(JSON.stringify(resp));
-                     });
-                 */
              })
-
-
            }, (error)=>{
              alert(error);
            });
@@ -185,18 +174,39 @@ export class SignInPage {
     }
   }
    checkLoginState(Facebook) {
-
       Facebook.getLoginStatus(
         (response)=> {
         this.statusChangeCallback(response)
       }
       );
   }
-  //Google + login native
+  //Google+ login native
   googlePlusNativeConnect(){
-    GooglePlus.login()
-      .then(res => alert("GOOGLE RESPONSE"+JSON.stringify(res)))
-      .catch(err => console.error(err));
+    this.connected=true;
+     GooglePlus.login({
+      "scopes":"",
+      "webClientId": "6996723272-kiv5cpplhama4ie93ubi0vdfmpmr43lo.apps.googleusercontent.com",
+      "offline": true
+    }).then((data) => {
+        alert(JSON.stringify(data));
+        alert(data.accessToken);
+        this.idToken=data.idToken;
+        this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
+         data => alert("data=> "+data),
+        err => alert("Err=> "+err),
+        () => alert('yay')
+        )
+       // this.oauthLoginApiRequest('google',data.idToken);
+      }).catch((data) => {
+        alert("ERROR"+JSON.stringify(data));
+      });
+  }
+  //Logout from Google 
+  disconnectFromGoogle(){
+    GooglePlus.logout().then(()=>{
+      alert('disconnected');
+       this.connected=false;
+    });
   }
   //This function use the sattelizer Oauth operation using the provider's name as a param
   sattelizerOauth(provider){
