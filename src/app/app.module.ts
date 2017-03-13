@@ -4,6 +4,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 import {SignInPage} from '../pages/sign-in/sign-in';
 import {SignUpPage} from '../pages/sign-up/sign-up';
+import {HomePage} from '../pages/home/home';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../providers/api-service';
 import { RestangularModule } from 'ng2-restangular';
@@ -13,7 +14,8 @@ import {SatellizerService} from '../providers/satellizer-service';
   declarations: [
     MyApp,
     SignInPage,
-    SignUpPage
+    SignUpPage,
+    HomePage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -24,7 +26,8 @@ import {SatellizerService} from '../providers/satellizer-service';
   entryComponents: [
     MyApp,
     SignInPage,
-    SignUpPage
+    SignUpPage,
+    HomePage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,GooglePlusService]
 })
