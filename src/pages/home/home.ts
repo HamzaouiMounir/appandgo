@@ -13,20 +13,42 @@ import { ApiService } from './../../providers/api-service';
   templateUrl: 'home.html'
 })
 export class HomePage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams,private API:ApiService,private aclService:AclService) {}
+  userInformation:any={};
+  constructor(public navCtrl: NavController, public navParams: NavParams,private API:ApiService,private aclService:AclService) {
+      this.getMe();
+      alert(JSON.stringify(this.userInformation.data));
+      
+  }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad HomePage');
+    alert('ionViewDidLoad HomePage');
     this.getMe();
+
   }
   private getMe(){
-    let userData=this.API.service('me',this.API.all('users'));
-    userData.one().get().then(
+    let userData=this.API.all('users');
+    userData.get('me').subscribe(
       (response)=>{
-        alert(JSON.stringify(response));
+        
+        this.userInformation=this.API.copy(response);
+        alert(JSON.stringify(this.userInformation.data));
+        /*this.userInformation.data.current_password = ''
+        this.userInformation.data.new_password = ''
+        this.userInformation.data.new_password_confirmation = ''*/
+        
       }
     )
+   
+  }
+  putMe(){
+    this.userInformation.put().then(()=>{
+      alert('success');
+    },
+    (response)=>{
+      alert(response);
+    }).catch((err)=>{
+      alert("error:"+err)
+    })
   }
 
 }

@@ -6,13 +6,48 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>home</ion-title>
+  <ion-navbar newColor>
+    <ion-title light><b>APP and GO</b> Admin</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+  <h5>{{this.userInformation.data.name}}</h5>
+  <!--<ion-card>
 
+  <ion-item>
+    <ion-avatar item-left>
+      <img src="{{userInformation.data}}">
+    </ion-avatar>
+    <h2>{{userInformation.data.name}}</h2>
+    <p>{{userInformation.data}}</p>
+  </ion-item>
+
+
+
+  <ion-card-content>
+    <p>Crée le {{userInformation.data }}</p>
+  </ion-card-content>
+
+
+</ion-card>-->
+
+ <!--<form (ngSubmit)="putMe()">
+    <ion-list>
+      <ion-item>
+        <ion-label floating>Nom</ion-label>
+        <ion-input type="text" [(ngModel)]="userInformation.data.name" name="name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Email</ion-label>
+        <ion-input type="text" [(ngModel)]="userInformation.data.email" name="email"></ion-input>
+      </ion-item>
+    </ion-list>
+    <div padding>
+      <button ion-button type="submit" full color="newColor">Put Me</button>
+    </div>
+</form>-->
 </ion-content>

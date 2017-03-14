@@ -1,3 +1,4 @@
+import {  Storage } from '@ionic/storage';
 import { GooglePlusService } from './../providers/google-plus-service';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';

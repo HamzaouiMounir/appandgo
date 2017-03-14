@@ -1,12 +1,15 @@
+import { Storage } from '@ionic/storage';
+import { HomePage } from './../home/home';
 import { GooglePlusService } from './../../providers/google-plus-service';
 import { Component } from '@angular/core';
-import { NavController, NavParams, ToastController, LoadingController} from 'ionic-angular';
+import { NavController, NavParams, ToastController, LoadingController,ViewController} from 'ionic-angular';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
 import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
 import {AuthService} from 'ng2-ui-auth';
 import { GooglePlus } from 'ionic-native';
+
 
 /*
   Generated class for the SignIn page.
@@ -25,14 +28,17 @@ export class SignInPage {
  connected=false;
  idToken='';
  FB_APP_ID: number = 1368002846591785;
-  constructor(public navCtrl: NavController,
+  constructor(
+    public viewCtrl:ViewController,
+    public navCtrl: NavController,
     public navParams: NavParams,
     public toastCtrl: ToastController,
     private API:ApiService,
     public aclService:AclService,
     public loader:LoadingController,
     public auth:AuthService,
-    private gplusService:GooglePlusService) {
+    private gplusService:GooglePlusService,
+    private storage:Storage) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
   }
@@ -56,6 +62,10 @@ export class SignInPage {
                this.userinfo=resp.data.user;
                this.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
                 loading.dismiss();
+                
+                this.storage.set('satellizer_token',resp.data.token);
+                
+                this.goToHomePage();
              }else{
                this.error='Email ou mot de passe sont incorrectes';
              }
@@ -83,7 +93,7 @@ export class SignInPage {
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
                console.log(JSON.stringify(user));
-               
+
                  this.oauthLoginApiRequest('facebook',accessToken);
              })
            }, (error)=>{
@@ -103,9 +113,7 @@ export class SignInPage {
    this.aclService.setAbilities(abilities);
    //fetching and attaching all user roles to AclService
    roles.forEach(role => {
-               console.log(role);
-               this.aclService.attachRole(role);
-               console.log(this.aclService.getRoleAbilities(role));
+               this.aclService.attachRole(role);        
    });
  }
 
@@ -185,7 +193,7 @@ export class SignInPage {
   //Google+ login native Oauth
   googlePlusNativeConnect(){
     this.connected=true;
-    //We use the login static function of GooglePlus 
+    //We use the login static function of GooglePlus
     /**
      * options in this function are:
      * scopes
@@ -200,7 +208,7 @@ export class SignInPage {
         /*alert(JSON.stringify(data));
         alert("ServerAuthCode to send to the api= "+data.serverAuthCode);*/
         /**
-         * Data response contains multiple field 
+         * Data response contains multiple field
          * data.email          // 'hamzaouimounir@example.com'
          * data.userId         // user id
          * data.displayName    // 'Mounir Hamzaoui'
@@ -250,9 +258,15 @@ export class SignInPage {
           (callbackResponse)=>{
             alert("Connected on "+providerName+" provider");
             alert(JSON.stringify(callbackResponse.data));
+            this.goToHomePage();
           }
         );
   }
 
+  private goToHomePage(){
+    //this.viewCtrl.dismiss();
+    this.navCtrl.setRoot(HomePage);
+    //this.navCtrl.removeView(this.viewCtrl);
+  }
 
 }

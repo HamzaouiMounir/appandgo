@@ -1,14 +1,15 @@
+import { Storage } from '@ionic/storage';
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Rx';
-import { Storage } from '@ionic/storage';
 import { Restangular } from 'ng2-restangular';
 
 //This provider will handle the restangular configuration
 @Injectable()
 export class ApiService extends Restangular{
   //Restangular Configuration
+  public static token='';
  static RestangularConfigFactory (RestangularProvider) {
 
  RestangularProvider.setBaseUrl('http://appandgo-mounir-customadmin.herokuapp.com/api/');
@@ -41,8 +42,20 @@ export class ApiService extends Restangular{
    return true; // error not handled
  });
  RestangularProvider.addFullRequestInterceptor((element, operation, path, url, headers, params)=> {
+  let localStorage = new Storage();
+  headers={
+    'Content-Type':'application/json',
+    'Accept':'application/x.laravel.v1+json'
+  }
+  //linking Restangular to Satelllizer token based Oauth
+  localStorage.get('satellizer_token').then(
+                  (val)=>{
+                    this.token=val;
+                  }
+                )
+    headers.Authorization='Bearer '+this.token;
   return {
-    params: Object.assign({}, params, {sort:"name"}),
+    params: Object.assign({}, params, {}),
     headers: headers,
     element: element
   }
