@@ -9,20 +9,15 @@ import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
 import {AuthService} from 'ng2-ui-auth';
 import { GooglePlus } from 'ionic-native';
-
-
-/*
-  Generated class for the SignIn page.
-
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
 @Component({
   selector: 'page-sign-in',
   templateUrl: 'sign-in.html'
 })
 export class SignInPage {
- user ={};
+ user ={
+   email:'test3@test.com',
+   password:'testtest'
+ };
  userinfo={};
  error='';
  connected=false;
@@ -41,7 +36,8 @@ export class SignInPage {
     private storage:Storage) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
-  }
+    
+}
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SignInPage');
@@ -57,18 +53,20 @@ export class SignInPage {
         let auth= this.API.all('auth').all('login');
          auth.post(this.user).subscribe(
            (resp)=>{
+             loading.dismiss();
              if(!resp.errors){
                this.connected=true;
                this.userinfo=resp.data.user;
                this.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
-                loading.dismiss();
-                
-                this.storage.set('satellizer_token',resp.data.token);
-                
-                this.goToHomePage();
+               this.storage.set('satellizer_token',resp.data.token);
+               this.goToHomePage();
              }else{
-               this.error='Email ou mot de passe sont incorrectes';
+               
              }
+           },
+           (error)=>{
+              loading.dismiss();
+              this.error='Email ou mot de passe sont incorrectes';
            }
          );
 
@@ -84,7 +82,7 @@ export class SignInPage {
            permissions = ["public_profile"];
            Facebook.login(permissions)
            .then((response)=>{
-             alert("**ACCESS TOKEN =**"+JSON.stringify(response.authResponse.accessToken));
+             //alert("**ACCESS TOKEN =**"+JSON.stringify(response.authResponse.accessToken));
              let userId = response.authResponse.userID;
              let accessToken=response.authResponse.accessToken;
              let params = new Array();
@@ -92,7 +90,7 @@ export class SignInPage {
              Facebook.api("/me?fields=name,gender,age_range,first_name,last_name", params)
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
-               console.log(JSON.stringify(user));
+               //console.log(JSON.stringify(user));
 
                  this.oauthLoginApiRequest('facebook',accessToken);
              })
@@ -132,13 +130,13 @@ export class SignInPage {
  }
 
   checkStatusChangeCallback(){
-      alert('Checking the Status Changes');
+      //alert('Checking the Status Changes');
   }
   disconnectFromFacebook(){
     Facebook.logout().then((facebookDisconnectionResponse)=>{
         alert('Disconnected User');
         alert(facebookDisconnectionResponse);
-        this.connected=false;
+        //this.connected=false;
     },(error)=>{
         alert(error);
     })
@@ -150,8 +148,8 @@ export class SignInPage {
   }
   // This is called with the results from from Facebook.getLoginStatus().
    statusChangeCallback(response) {
-    alert('statusChangeCallback');
-    alert(JSON.stringify(response));
+    //alert('statusChangeCallback');
+    //alert(JSON.stringify(response));
 
 
     // The response object is returned with a status field that lets the
@@ -161,25 +159,25 @@ export class SignInPage {
     if (response.status === 'connected') {
       this.connected=true;
       // Logged into your app and Facebook.
-      alert('Already connected')
-    alert('Fetching your information.... ');
+      //alert('Already connected')
+    //alert('Fetching your information.... ');
     Facebook.api('/me',null).then((response)=> {
-      console.log('Successful login for: ' + response.name)
-      alert('Thanks for logging in, ' + response.name + '!')
+      //console.log('Successful login for: ' + response.name)
+      //alert('Thanks for logging in, ' + response.name + '!')
     })
-    alert('end of fetching ')
+    //alert('end of fetching ')
 
      // this.testAPI(this.Facebook);
     } else if (response.status === 'not_authorized') {
       // The person is logged into Facebook, but not your app.
-          alert('not_authorized');
-          this.connected=false;
+      // alert('not_authorized');
+          
 
     } else {
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
-          alert('not_authorized');
-          this.connected=false;
+      //alert('not_authorized');
+          
 
     }
   }
@@ -192,7 +190,7 @@ export class SignInPage {
   }
   //Google+ login native Oauth
   googlePlusNativeConnect(){
-    this.connected=true;
+    
     //We use the login static function of GooglePlus
     /**
      * options in this function are:

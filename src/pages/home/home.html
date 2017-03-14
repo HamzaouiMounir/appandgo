@@ -6,48 +6,73 @@
 -->
 <ion-header>
 
-  <ion-navbar newColor>
+  <ion-navbar color="newColor" >
     <ion-title light><b>APP and GO</b> Admin</ion-title>
+    <ion-buttons end>
+       <!--Here we will add actions-->
+      </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
-  <h5>{{this.userInformation.data.name}}</h5>
-  <!--<ion-card>
+<ion-content >
+  <ion-card *ngIf="!editAttempt">
 
   <ion-item>
     <ion-avatar item-left>
-      <img src="{{userInformation.data}}">
+      <img src="{{userInformation.data?.avatar}}">
     </ion-avatar>
-    <h2>{{userInformation.data.name}}</h2>
-    <p>{{userInformation.data}}</p>
+    <h2>{{userInformation.data?.name}}</h2>
+    <p>{{userInformation.data?.email}}</p>
   </ion-item>
 
 
 
   <ion-card-content>
-    <p>Crée le {{userInformation.data }}</p>
+    <p>Crée le {{userInformation.data?.created_at }}</p>
+    <button ion-button (click)="edit()" style="float: right"><ion-icon name="create"></ion-icon>Editer</button>
+
   </ion-card-content>
+    
 
+</ion-card>
 
-</ion-card>-->
-
- <!--<form (ngSubmit)="putMe()">
+ <form (ngSubmit)="putMe()" *ngIf="editAttempt">
     <ion-list>
+      <ion-item color="darker">
+          Mon profile
+      </ion-item>
       <ion-item>
         <ion-label floating>Nom</ion-label>
-        <ion-input type="text" [(ngModel)]="userInformation.data.name" name="name"></ion-input>
+        <ion-input type="text" [(ngModel)]="userInformation?.data.name" name="name"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label floating>Email</ion-label>
-        <ion-input type="text" [(ngModel)]="userInformation.data.email" name="email"></ion-input>
+        <ion-input type="text" [(ngModel)]="userInformation?.data.email" name="email"></ion-input>
+      </ion-item>
+      
+    </ion-list>
+    <ion-list>
+      <ion-item color="red700">
+          Mettre à jour mon mot de passe
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Mot de passe actuelle</ion-label>
+        <ion-input type="text" [(ngModel)]="userInformation?.data.current_password" name="current_password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Nouveau mot de passe</ion-label>
+        <ion-input type="text" [(ngModel)]="userInformation?.data.new_password" name="new_password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Confirmer le nouveau mot de passe</ion-label>
+        <ion-input type="text" [(ngModel)]="userInformation?.data.new_password_confirmation" name="new_password_confirmation"></ion-input>
       </ion-item>
     </ion-list>
     <div padding>
-      <button ion-button type="submit" full color="newColor">Put Me</button>
+      <button ion-button type="submit" full color="newColor">Enregistrer</button>
     </div>
-</form>-->
+</form>
 </ion-content>

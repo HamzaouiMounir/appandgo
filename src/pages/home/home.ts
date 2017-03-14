@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController,ToastController, NavParams } from 'ionic-angular';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
 /*
@@ -13,42 +13,50 @@ import { ApiService } from './../../providers/api-service';
   templateUrl: 'home.html'
 })
 export class HomePage {
-  userInformation:any={};
-  constructor(public navCtrl: NavController, public navParams: NavParams,private API:ApiService,private aclService:AclService) {
-      this.getMe();
-      alert(JSON.stringify(this.userInformation.data));
+  userInformation:any={}
+  editAttempt=false;
+  me:any;
+  constructor(public navCtrl: NavController, 
+  public navParams: NavParams,
+  private API:ApiService,
+  private aclService:AclService,
+  public toastCtrl: ToastController) {
+     //on view loading we will call the api route users/me =>getMe
+     this.API.all('users').one('me').get().subscribe(
+          (response)=>{
+            //affecting the response from the laravel api to userInformation using Restangular
+            this.userInformation=this.API.copy(response);
+            this.userInformation.data.current_password = '';
+            this.userInformation.data.new_password = '';
+            this.userInformation.data.new_password_confirmation = '';
+          })
+    
       
   }
 
   ionViewDidLoad() {
-    alert('ionViewDidLoad HomePage');
-    this.getMe();
-
   }
-  private getMe(){
-    let userData=this.API.all('users');
-    userData.get('me').subscribe(
-      (response)=>{
-        
-        this.userInformation=this.API.copy(response);
-        alert(JSON.stringify(this.userInformation.data));
-        /*this.userInformation.data.current_password = ''
-        this.userInformation.data.new_password = ''
-        this.userInformation.data.new_password_confirmation = ''*/
-        
-      }
-    )
-   
+  edit(){
+    this.editAttempt=!this.editAttempt;
   }
   putMe(){
-    this.userInformation.put().then(()=>{
-      alert('success');
-    },
+    //Here we use directly the userInformation copied response to implement the modification and send a put request 
+    this.userInformation.put().subscribe(
     (response)=>{
-      alert(response);
-    }).catch((err)=>{
-      alert("error:"+err)
-    })
+      if(response.data=="success"){
+          //alert(JSON.stringify(response));
+          this.edit();
+          this.presentToast('Informations enregistrées')
+      }
+     
+    });
   }
+   presentToast(message) {
+   let toast = this.toastCtrl.create({
+     message: message,
+     duration: 3000
+   });
+   toast.present();
+ }
 
 }
