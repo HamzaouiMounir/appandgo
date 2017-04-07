@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
-import { NavController,ToastController, NavParams } from 'ionic-angular';
+import { NavController,ToastController, NavParams,LoadingController } from 'ionic-angular';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
+import {
+  Push,
+  PushToken
+} from '@ionic/cloud-angular';
 /*
   Generated class for the Home page.
 
@@ -20,20 +24,33 @@ export class HomePage {
   public navParams: NavParams,
   private API:ApiService,
   private aclService:AclService,
-  public toastCtrl: ToastController) {
-     //on view loading we will call the api route users/me =>getMe
-     this.API.all('users').one('me').get().subscribe(
-          (response)=>{
-            //affecting the response from the laravel api to userInformation using Restangular
-            this.userInformation=this.API.copy(response);
-            this.userInformation.data.current_password = '';
-            this.userInformation.data.new_password = '';
-            this.userInformation.data.new_password_confirmation = '';
-          })
-    
+  public loader:LoadingController,
+  public toastCtrl: ToastController,
+  public push: Push) {
+     
       
   }
-
+  ngOnInit(){
+    //initialisation du chargeur des données
+    let loading=this.loader.create({
+       content:'Chargement des données...'
+     });
+     loading.present().then(()=>{
+        //on view loading we will call the api route users/me =>getMe
+        this.API.all('users').one('me').get().subscribe(
+              (response)=>{
+                //affecting the response from the laravel api to userInformation using Restangular
+                this.userInformation=this.API.copy(response);
+                this.userInformation.data.current_password = '';
+                this.userInformation.data.new_password = '';
+                this.userInformation.data.new_password_confirmation = '';
+                loading.dismiss();
+              })
+              
+        // we have to use observable subscribe lifecycle Here
+        //** to remember  */
+     });
+  }
   ionViewDidLoad() {
   }
   edit(){
@@ -46,7 +63,8 @@ export class HomePage {
       if(response.data=="success"){
           //alert(JSON.stringify(response));
           this.edit();
-          this.presentToast('Informations enregistrées')
+          this.presentToast('Informations enregistrées');
+          
       }
      
     });
@@ -58,5 +76,5 @@ export class HomePage {
    });
    toast.present();
  }
-
+  
 }

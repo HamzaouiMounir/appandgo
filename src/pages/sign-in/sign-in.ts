@@ -9,6 +9,11 @@ import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
 import {AuthService} from 'ng2-ui-auth';
 import { GooglePlus } from 'ionic-native';
+import {
+  Push,
+  PushToken
+} from '@ionic/cloud-angular';
+//declare var FCMPlugin;
 @Component({
   selector: 'page-sign-in',
   templateUrl: 'sign-in.html'
@@ -33,7 +38,8 @@ export class SignInPage {
     public loader:LoadingController,
     public auth:AuthService,
     private gplusService:GooglePlusService,
-    private storage:Storage) {
+    private storage:Storage,
+    public push: Push) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
     
@@ -59,6 +65,7 @@ export class SignInPage {
                this.userinfo=resp.data.user;
                this.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
                this.storage.set('satellizer_token',resp.data.token);
+               this.handleDeviceNotificationToken(resp.data.user.id);
                this.goToHomePage();
              }else{
                
@@ -67,6 +74,7 @@ export class SignInPage {
            (error)=>{
               loading.dismiss();
               this.error='Email ou mot de passe sont incorrectes';
+              alert(error);
            }
          );
 
@@ -200,7 +208,7 @@ export class SignInPage {
      */
      GooglePlus.login({
       "scopes":"",
-      "webClientId": "6996723272-kiv5cpplhama4ie93ubi0vdfmpmr43lo.apps.googleusercontent.com",
+      "webClientId": "436973074865-3m1eif3ip5629oafl0fsldsptfp0pkrk.apps.googleusercontent.com",
       "offline": true
     }).then((data) => {
         /*alert(JSON.stringify(data));
@@ -219,6 +227,7 @@ export class SignInPage {
         //GooglePlusService is a local provider that emit a HTTP/POST request to this endpoint https://www.googleapis.com/oauth2/v4/token in order to get the accessToken using serverAuthCode
         this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
          data => {
+           alert(JSON.stringify(data));
         //retreiving the accessToken in this response and send it to the oauthLoginApiRequest which is a function that call the Laravel API endpoint using the provider name ='google' and the accessToken param
                 this.oauthLoginApiRequest('google',data.access_token);
         },
@@ -257,6 +266,7 @@ export class SignInPage {
             alert("Connected on "+providerName+" provider");
             alert(JSON.stringify(callbackResponse.data));
             this.goToHomePage();
+            //this.handleDeviceNotificationToken();
           }
         );
   }
@@ -266,5 +276,58 @@ export class SignInPage {
     this.navCtrl.setRoot(HomePage);
     //this.navCtrl.removeView(this.viewCtrl);
   }
+  handleDeviceNotificationToken(userID){
+     alert('this is users id='+userID );
 
+     
+          this.push.register().then((t: PushToken) => {
+            return this.push.saveToken(t);
+          }).then((t: PushToken) => {
+            alert('Token saved:'+ t.token);
+           // this.storage.set('device_notification_token',t.token);
+            let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(t.token);
+            console.log(JSON.stringify(refreshCallback));
+            refreshCallback.get().subscribe(
+              (response)=>{
+                alert(JSON.stringify(response));
+              }
+            );
+          });
+
+          //using Cordova Native 
+           /*if(typeof(FCMPlugin) !== "undefined"){
+                FCMPlugin.getToken(function(t){
+                  alert("Use this token for sending device specific messages\nToken: " + t);
+                  let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(t);
+                    console.log(JSON.stringify(refreshCallback));
+                    refreshCallback.get().subscribe(
+                      (response)=>{
+                        alert(JSON.stringify(response));
+                      }
+                    );
+                 }, function(e){
+                  alert("Uh-Oh!\n"+e);
+                });
+
+                FCMPlugin.onNotification(function(d){
+                  if(d.wasTapped){  
+                    // Background receival (Even if app is closed),
+                    //   bring up the message in UI
+                  } else {
+                    // Foreground receival, update UI or what have you...
+                  }
+                }, function(msg){
+                  // No problemo, registered callback
+                }, function(err){
+                  console.log("Arf, no good mate... " + err);
+                });
+              } else console.log("Notifications disabled, only provided in Android/iOS environment");
+            */
+    }
+    handleNotification(){
+      this.push.rx.notification()
+        .subscribe((msg) => {
+          alert(msg.title + ': ' + msg.text);
+        });
+    }
 }

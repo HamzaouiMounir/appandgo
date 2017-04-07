@@ -11,6 +11,25 @@ import { ApiService } from './../providers/api-service';
 import { RestangularModule } from 'ng2-restangular';
 import {Ng2UiAuthModule} from 'ng2-ui-auth';
 import {SatellizerService} from '../providers/satellizer-service';
+import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
+
+const cloudSettings: CloudSettings = {
+  'core': {
+    'app_id': '20a50492'
+  },
+  'push': {
+    'sender_id': '436973074865',
+    'pluginConfig': {
+      'ios': {
+        'badge': true,
+        'sound': true
+      },
+      'android': {
+        'iconColor': '#343434'
+      }
+    }
+  }
+};
 @NgModule({
   declarations: [
     MyApp,
@@ -21,7 +40,8 @@ import {SatellizerService} from '../providers/satellizer-service';
   imports: [
     IonicModule.forRoot(MyApp),
      RestangularModule.forRoot(ApiService.RestangularConfigFactory),
-     Ng2UiAuthModule.forRoot(SatellizerService)
+     Ng2UiAuthModule.forRoot(SatellizerService),
+     CloudModule.forRoot(cloudSettings)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
