@@ -27,11 +27,10 @@ export class HomePage {
   public loader:LoadingController,
   public toastCtrl: ToastController,
   public push: Push) {
-     
-      
+  
   }
   ngOnInit(){
-    //initialisation du chargeur des données
+       //initialisation du chargeur des données
     let loading=this.loader.create({
        content:'Chargement des données...'
      });
@@ -39,6 +38,7 @@ export class HomePage {
         //on view loading we will call the api route users/me =>getMe
         this.API.all('users').one('me').get().subscribe(
               (response)=>{
+                
                 //affecting the response from the laravel api to userInformation using Restangular
                 this.userInformation=this.API.copy(response);
                 this.userInformation.data.current_password = '';
@@ -49,7 +49,7 @@ export class HomePage {
               
         // we have to use observable subscribe lifecycle Here
         //** to remember  */
-     });
+     }); 
   }
   ionViewDidLoad() {
   }

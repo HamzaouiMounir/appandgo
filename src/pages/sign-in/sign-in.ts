@@ -13,7 +13,7 @@ import {
   Push,
   PushToken
 } from '@ionic/cloud-angular';
-//declare var FCMPlugin;
+ declare var FirebasePlugin;
 @Component({
   selector: 'page-sign-in',
   templateUrl: 'sign-in.html'
@@ -43,10 +43,12 @@ export class SignInPage {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
     
+    
 }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SignInPage');
+    
   }
 
 
@@ -64,9 +66,9 @@ export class SignInPage {
                this.connected=true;
                this.userinfo=resp.data.user;
                this.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
+               //alert('data: '+JSON.stringify(JSON.stringify(resp.data)));
                this.storage.set('satellizer_token',resp.data.token);
                this.handleDeviceNotificationToken(resp.data.user.id);
-               this.goToHomePage();
              }else{
                
              }
@@ -211,8 +213,8 @@ export class SignInPage {
       "webClientId": "436973074865-3m1eif3ip5629oafl0fsldsptfp0pkrk.apps.googleusercontent.com",
       "offline": true
     }).then((data) => {
-        /*alert(JSON.stringify(data));
-        alert("ServerAuthCode to send to the api= "+data.serverAuthCode);*/
+        //alert(JSON.stringify(data));
+        /*alert("ServerAuthCode to send to the api= "+data.serverAuthCode);*/
         /**
          * Data response contains multiple field
          * data.email          // 'hamzaouimounir@example.com'
@@ -227,7 +229,7 @@ export class SignInPage {
         //GooglePlusService is a local provider that emit a HTTP/POST request to this endpoint https://www.googleapis.com/oauth2/v4/token in order to get the accessToken using serverAuthCode
         this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
          data => {
-           alert(JSON.stringify(data));
+          // alert(JSON.stringify(data));
         //retreiving the accessToken in this response and send it to the oauthLoginApiRequest which is a function that call the Laravel API endpoint using the provider name ='google' and the accessToken param
                 this.oauthLoginApiRequest('google',data.access_token);
         },
@@ -260,74 +262,40 @@ export class SignInPage {
   }
   //this private function will be called after Oauth Facebook or Google connexion to send the accessToken to the Laravel API
   private oauthLoginApiRequest(providerName,accessToken){
-    let callback=this.API.all('auth').one(providerName,accessToken);
+    
+    let callback=this.API.all('auth').all(providerName).one(accessToken);
         callback.get().subscribe(
           (callbackResponse)=>{
-            alert("Connected on "+providerName+" provider");
-            alert(JSON.stringify(callbackResponse.data));
-            this.goToHomePage();
-            //this.handleDeviceNotificationToken();
-          }
+            //alert("Connected on "+providerName+" provider");
+            //alert(JSON.stringify(callbackResponse.data.original.data));
+            this.handleDeviceNotificationToken(callbackResponse.data.original.data.user.id);
+            this.setAbilitiesAndRolesToAcl(callbackResponse.data.original.data.abilities,callbackResponse.data.original.data.userRole);
+            //alert("satellizer_token = "+callbackResponse.data.original.data.token);
+            this.storage.set('satellizer_token',callbackResponse.data.original.data.token);
+            
+          },
+          (error)=>alert(error)
         );
   }
 
   private goToHomePage(){
-    //this.viewCtrl.dismiss();
     this.navCtrl.setRoot(HomePage);
-    //this.navCtrl.removeView(this.viewCtrl);
   }
   handleDeviceNotificationToken(userID){
-     alert('this is users id='+userID );
-
-     
-          this.push.register().then((t: PushToken) => {
-            return this.push.saveToken(t);
-          }).then((t: PushToken) => {
-            alert('Token saved:'+ t.token);
-           // this.storage.set('device_notification_token',t.token);
-            let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(t.token);
-            console.log(JSON.stringify(refreshCallback));
-            refreshCallback.get().subscribe(
-              (response)=>{
-                alert(JSON.stringify(response));
-              }
-            );
-          });
-
-          //using Cordova Native 
-           /*if(typeof(FCMPlugin) !== "undefined"){
-                FCMPlugin.getToken(function(t){
-                  alert("Use this token for sending device specific messages\nToken: " + t);
-                  let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(t);
-                    console.log(JSON.stringify(refreshCallback));
+     //alert('this is users id='+userID );
+     FirebasePlugin.getToken((token) =>{
+                    // save this server-side and use it to push notifications to this device
+                    //alert("Firebase Token: "+token);
+                    let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(token);
                     refreshCallback.get().subscribe(
                       (response)=>{
-                        alert(JSON.stringify(response));
+                        //alert(JSON.stringify(response));
+                        this.goToHomePage();
                       }
                     );
-                 }, function(e){
-                  alert("Uh-Oh!\n"+e);
+                }, (error) =>{
+                    alert("Error: "+error);
                 });
-
-                FCMPlugin.onNotification(function(d){
-                  if(d.wasTapped){  
-                    // Background receival (Even if app is closed),
-                    //   bring up the message in UI
-                  } else {
-                    // Foreground receival, update UI or what have you...
-                  }
-                }, function(msg){
-                  // No problemo, registered callback
-                }, function(err){
-                  console.log("Arf, no good mate... " + err);
-                });
-              } else console.log("Notifications disabled, only provided in Android/iOS environment");
-            */
     }
-    handleNotification(){
-      this.push.rx.notification()
-        .subscribe((msg) => {
-          alert(msg.title + ': ' + msg.text);
-        });
-    }
+    
 }
