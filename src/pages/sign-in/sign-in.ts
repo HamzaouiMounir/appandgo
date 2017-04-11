@@ -8,12 +8,10 @@ import { ApiService } from './../../providers/api-service';
 import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
 import {AuthService} from 'ng2-ui-auth';
-import { GooglePlus } from 'ionic-native';
-import {
-  Push,
-  PushToken
-} from '@ionic/cloud-angular';
-//declare var FCMPlugin;
+import { AngularFire, FirebaseListObservable } from 'angularfire2';
+import { FirebaseAuthService } from '../../providers/firebase-auth-service'
+
+declare var FCMPlugin;
 @Component({
   selector: 'page-sign-in',
   templateUrl: 'sign-in.html'
@@ -24,6 +22,7 @@ export class SignInPage {
    password:'testtest'
  };
  userinfo={};
+ users:FirebaseListObservable<any[]>;
  error='';
  connected=false;
  idToken='';
@@ -39,9 +38,12 @@ export class SignInPage {
     public auth:AuthService,
     private gplusService:GooglePlusService,
     private storage:Storage,
-    public push: Push) {
+    af: AngularFire,
+    private _auth:FirebaseAuthService) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
+   
+
     
 }
 
@@ -65,7 +67,7 @@ export class SignInPage {
                this.userinfo=resp.data.user;
                this.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
                this.storage.set('satellizer_token',resp.data.token);
-               this.handleDeviceNotificationToken(resp.data.user.id);
+               this.handleDeviceNotificationToken(resp.data.user.id); 
                this.goToHomePage();
              }else{
                
@@ -196,8 +198,23 @@ export class SignInPage {
       }
       );
   }
+
+
+  //Google SignIn using firebase auth services
+  signInWithGoogle(): void {
+    this._auth.signInWithGoogle()
+      .then(() => this.onSignInSuccess());
+  }
+
+  private onSignInSuccess(): void {
+    console.log("Google display name ",this._auth.displayName());
+    console.log(this._auth.checkAuthState());
+    
+  }
+
+
   //Google+ login native Oauth
-  googlePlusNativeConnect(){
+ /* googlePlusNativeConnect(){
     
     //We use the login static function of GooglePlus
     /**
@@ -206,7 +223,7 @@ export class SignInPage {
      * webClientId: which is the client id attached to a web application in your Google console's project
      * offline mode is a configuration used with the webClientId to get the serverAuthCode and the tokenId from the serverAuthCode
      */
-     GooglePlus.login({
+   /*  GooglePlus.login({
       "scopes":"",
       "webClientId": "436973074865-3m1eif3ip5629oafl0fsldsptfp0pkrk.apps.googleusercontent.com",
       "offline": true
@@ -225,11 +242,11 @@ export class SignInPage {
          * data.serverAuthCode // Auth code that can be exchanged for an access token and refresh token for offline access
          */
         //GooglePlusService is a local provider that emit a HTTP/POST request to this endpoint https://www.googleapis.com/oauth2/v4/token in order to get the accessToken using serverAuthCode
-        this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
-         data => {
+        //this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
+         /*data => {
            alert(JSON.stringify(data));
         //retreiving the accessToken in this response and send it to the oauthLoginApiRequest which is a function that call the Laravel API endpoint using the provider name ='google' and the accessToken param
-                this.oauthLoginApiRequest('google',data.access_token);
+          //      this.oauthLoginApiRequest('google',data.access_token);
         },
         err => alert("Err=> "+err),
         () => alert('Success Connexion')
@@ -245,7 +262,9 @@ export class SignInPage {
        this.connected=false;
     });
 
-  }
+  }*/
+
+
   //This function use the sattelizer Oauth operation using the provider's name as a param
   sattelizerOauth(provider){
     //you can use this method till 20th april then the integrated based Oauth for Google Plus will be blocked
@@ -258,6 +277,8 @@ export class SignInPage {
             });
 
   }
+
+
   //this private function will be called after Oauth Facebook or Google connexion to send the accessToken to the Laravel API
   private oauthLoginApiRequest(providerName,accessToken){
     let callback=this.API.all('auth').one(providerName,accessToken);
@@ -270,36 +291,20 @@ export class SignInPage {
           }
         );
   }
-
+  //navigate to home page
   private goToHomePage(){
-    //this.viewCtrl.dismiss();
     this.navCtrl.setRoot(HomePage);
-    //this.navCtrl.removeView(this.viewCtrl);
   }
+  //this function handle the user id after sign in process and generate a firebase cloud messaging device token
   handleDeviceNotificationToken(userID){
      alert('this is users id='+userID );
-
-     
-          this.push.register().then((t: PushToken) => {
-            return this.push.saveToken(t);
-          }).then((t: PushToken) => {
-            alert('Token saved:'+ t.token);
-           // this.storage.set('device_notification_token',t.token);
-            let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(t.token);
-            console.log(JSON.stringify(refreshCallback));
-            refreshCallback.get().subscribe(
-              (response)=>{
-                alert(JSON.stringify(response));
-              }
-            );
-          });
-
-          //using Cordova Native 
-           /*if(typeof(FCMPlugin) !== "undefined"){
-                FCMPlugin.getToken(function(t){
+          
+           if(typeof(FCMPlugin) !== "undefined"){
+             //get the FCM token 
+                FCMPlugin.getToken((t)=>{
                   alert("Use this token for sending device specific messages\nToken: " + t);
+                  //sending the token with the userID to the api
                   let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(t);
-                    console.log(JSON.stringify(refreshCallback));
                     refreshCallback.get().subscribe(
                       (response)=>{
                         alert(JSON.stringify(response));
@@ -308,7 +313,7 @@ export class SignInPage {
                  }, function(e){
                   alert("Uh-Oh!\n"+e);
                 });
-
+                //this process will be implemented and commented soon ... 
                 FCMPlugin.onNotification(function(d){
                   if(d.wasTapped){  
                     // Background receival (Even if app is closed),
@@ -318,16 +323,12 @@ export class SignInPage {
                   }
                 }, function(msg){
                   // No problemo, registered callback
+                  alert(msg);
                 }, function(err){
-                  console.log("Arf, no good mate... " + err);
+                  alert("Arf, no good mate... " + err);
                 });
-              } else console.log("Notifications disabled, only provided in Android/iOS environment");
-            */
+              } else alert("Notifications disabled, only provided in Android/iOS environment");
+            
     }
-    handleNotification(){
-      this.push.rx.notification()
-        .subscribe((msg) => {
-          alert(msg.title + ': ' + msg.text);
-        });
-    }
+    
 }

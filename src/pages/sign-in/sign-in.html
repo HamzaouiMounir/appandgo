@@ -36,8 +36,8 @@
   </form>
   <div padding>
   <button ion-button *ngIf="!connected" (click)="facebookOath()" full>Me connecter avec Facebook</button>
-  <button ion-button *ngIf="!connected" (click)="googlePlusNativeConnect()" full color="danger">Me connecter avec Google</button>
-  <button ion-button *ngIf="connected" (click)="disconnectFromGoogle()" full color="danger">Disconnect from Google</button>
+  <button ion-button *ngIf="!connected" (click)="signInWithGoogle()" full color="danger">Me connecter avec Google</button>
+ 
 </div>
   <a href="#" left (click)="goToRegistration()">S'inscrire</a>
   <a href="#" right (click)="goToTermsAndConditions()">Termes et Conditions</a>

@@ -2,10 +2,7 @@ import { Component } from '@angular/core';
 import { NavController,ToastController, NavParams,LoadingController } from 'ionic-angular';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
-import {
-  Push,
-  PushToken
-} from '@ionic/cloud-angular';
+
 /*
   Generated class for the Home page.
 
@@ -25,8 +22,7 @@ export class HomePage {
   private API:ApiService,
   private aclService:AclService,
   public loader:LoadingController,
-  public toastCtrl: ToastController,
-  public push: Push) {
+  public toastCtrl: ToastController) {
      
       
   }

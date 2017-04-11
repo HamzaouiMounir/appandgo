@@ -11,24 +11,15 @@ import { ApiService } from './../providers/api-service';
 import { RestangularModule } from 'ng2-restangular';
 import {Ng2UiAuthModule} from 'ng2-ui-auth';
 import {SatellizerService} from '../providers/satellizer-service';
-import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
-
-const cloudSettings: CloudSettings = {
-  'core': {
-    'app_id': '20a50492'
-  },
-  'push': {
-    'sender_id': '436973074865',
-    'pluginConfig': {
-      'ios': {
-        'badge': true,
-        'sound': true
-      },
-      'android': {
-        'iconColor': '#343434'
-      }
-    }
-  }
+import { AngularFireModule } from 'angularfire2';
+import { FirebaseAuthService } from '../providers/firebase-auth-service';
+export const firebaseConfig = {
+   apiKey: "AIzaSyBS_0QLme2x3h1tdTRrDitVqVfSTNNmNx4",
+    authDomain: "appandgo-163110.firebaseapp.com",
+    databaseURL: "https://appandgo-163110.firebaseio.com",
+    projectId: "appandgo-163110",
+    storageBucket: "appandgo-163110.appspot.com",
+    messagingSenderId: "436973074865"
 };
 @NgModule({
   declarations: [
@@ -41,7 +32,7 @@ const cloudSettings: CloudSettings = {
     IonicModule.forRoot(MyApp),
      RestangularModule.forRoot(ApiService.RestangularConfigFactory),
      Ng2UiAuthModule.forRoot(SatellizerService),
-     CloudModule.forRoot(cloudSettings)
+     AngularFireModule.initializeApp(firebaseConfig)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -50,6 +41,6 @@ const cloudSettings: CloudSettings = {
     SignUpPage,
     HomePage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,GooglePlusService]
+  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,GooglePlusService,FirebaseAuthService]
 })
 export class AppModule {}
