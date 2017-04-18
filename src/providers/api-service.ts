@@ -17,6 +17,7 @@ export class ApiService extends Restangular{
  // This function must return observable
  var refreshAccesstoken = function () {
    // Here you can make action before repeated request
+   //linking Restangular to Satelllizer token based Oauth
    return Observable.of(true)
  };
  /**
@@ -42,18 +43,21 @@ export class ApiService extends Restangular{
    return true; // error not handled
  });
  RestangularProvider.addFullRequestInterceptor((element, operation, path, url, headers, params)=> {
+  //let bearerToken = authService.getBearerToken();
   let localStorage = new Storage();
-  headers={
-    'Content-Type':'application/json',
-    'Accept':'application/x.laravel.v1+json'
-  }
+  
   //linking Restangular to Satelllizer token based Oauth
   localStorage.get('satellizer_token').then(
                   (val)=>{
                     this.token=val;
                   }
                 )
-    headers.Authorization='Bearer '+this.token;
+    headers={
+      'Content-Type':'application/json',
+      'Accept':'application/x.laravel.v1+json',
+      'Authorization':'Bearer '+this.token
+    }
+   
   return {
     params: Object.assign({}, params, {}),
     headers: headers,

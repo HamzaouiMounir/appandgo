@@ -6,40 +6,70 @@
 -->
 <ion-header>
 
-  <ion-navbar>
+  <!--<ion-navbar>
     <ion-title>Login</ion-title>
   </ion-navbar>
-
+-->
 </ion-header>
 
 
-<ion-content padding>
-  <form (ngSubmit)="connect()" >
-    <p style="color:red;">{{error}}</p>
-    <ion-list>
+<ion-content >
 
-      <ion-item>
-        <ion-label floating>Email</ion-label>
-        <ion-input type="text" [(ngModel)]="user.email" name="email"></ion-input>
+<ion-grid padding>
+  <ion-row >
+    <ion-col>
+         <img id="logo"  src="https://www.app-and-go.fr/wp-content/uploads/2017/01/AppGogrand-blanc.png">
+    </ion-col>
+       
+  </ion-row>
+   <form (ngSubmit)="connect()" >
+  <ion-row>
+    <ion-col width-90>
+        <ion-item class="inputs" >
+        <ion-label floating color="light">Email</ion-label>
+        <ion-input  type="text" [(ngModel)]="user.email" name="email"></ion-input>
       </ion-item>
-
-      <ion-item>
-        <ion-label floating>Mot de passe</ion-label>
-        <ion-input type="password" [(ngModel)]="user.password" name="password"></ion-input>
+    </ion-col>
+  </ion-row>
+  <ion-row >
+    <ion-col width-90>
+       <ion-item class="inputs">
+        <ion-label floating color="light"> Mot de passe</ion-label>
+        <ion-input type="password" [(ngModel)]="user.password" name="password" ></ion-input>
       </ion-item>
-    </ion-list>
-    <div padding>
-      <button ion-button type="submit" full color="secondary">Connexion</button>
-
-
-    </div>
-  </form>
-  <div padding>
-  <button ion-button *ngIf="!connected" (click)="facebookOath()" full>Me connecter avec Facebook</button>
-  <button ion-button *ngIf="!connected" (click)="googlePlusNativeConnect()" full color="danger">Me connecter avec Google</button>
-  <button ion-button *ngIf="connected" (click)="disconnectFromGoogle()" full color="danger">Disconnect from Google</button>
-</div>
-  <a href="#" left (click)="goToRegistration()">S'inscrire</a>
-  <a href="#" right (click)="goToTermsAndConditions()">Termes et Conditions</a>
-
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col width-100>
+       <button ion-button type="submit" full color="secondary">Connexion</button>
+    </ion-col>
+  </ion-row>
+   </form>
+  <ion-row >
+    
+    <ion-col width-100>
+          <button ion-button  (click)="facebookOath()" full color="facebook">
+            <ion-icon name="logo-facebook"></ion-icon>
+               <ion-label>Me connecter avec Facebook </ion-label>      
+          </button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col width-100>
+          <button ion-button (click)="googlePlusNativeConnect()" full color="google">
+            <ion-icon name="logo-googleplus"></ion-icon>
+            <ion-label>Me connecter avec Google</ion-label>
+          </button>
+    </ion-col>
+  </ion-row>
+  <ion-row padding>
+    <ion-col>
+          <a href="#" left (click)="goToRegistration()" class="links">S'inscrire</a>
+    </ion-col>
+   
+    <ion-col>
+          <a href="#" right (click)="goToTermsAndConditions()" class="links">Mot de passe oublié?</a>
+    </ion-col>
+  </ion-row>
+</ion-grid>
 </ion-content>

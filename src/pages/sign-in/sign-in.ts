@@ -1,13 +1,13 @@
 import { Storage } from '@ionic/storage';
 import { HomePage } from './../home/home';
 import { GooglePlusService } from './../../providers/google-plus-service';
+import { AuthentificationService } from './../../providers/authentification-service';
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, LoadingController,ViewController} from 'ionic-angular';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
 import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
-import {AuthService} from 'ng2-ui-auth';
 import { GooglePlus } from 'ionic-native';
 import {
   Push,
@@ -36,18 +36,17 @@ export class SignInPage {
     private API:ApiService,
     public aclService:AclService,
     public loader:LoadingController,
-    public auth:AuthService,
-    private gplusService:GooglePlusService,
+    private Auth:AuthentificationService,
     private storage:Storage,
     public push: Push) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
-    
+    this.storage.remove('satellizer_token');
     
 }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SignInPage');
+    //alert('ionViewDidLoad SignInPage');
     
   }
 
@@ -63,20 +62,24 @@ export class SignInPage {
            (resp)=>{
              loading.dismiss();
              if(!resp.errors){
-               this.connected=true;
                this.userinfo=resp.data.user;
-               this.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
+               this.Auth.setAbilitiesAndRolesToAcl(resp.data.abilities,resp.data.userRole);
                //alert('data: '+JSON.stringify(JSON.stringify(resp.data)));
-               this.storage.set('satellizer_token',resp.data.token);
-               this.handleDeviceNotificationToken(resp.data.user.id);
+               this.Auth.registerDeviceNotificationToken(resp.data.user.id);
+                let credentials={
+                id:resp.data.user.id,
+                authType:'auth',
+                requestToken:resp.data.token
+            }
+            this.Auth.storeUserCredentials(credentials)
+               this.goToHomePage();
              }else{
-               
+               this.error='Vérifiez votre connectivité et réessayez!'
              }
            },
            (error)=>{
               loading.dismiss();
               this.error='Email ou mot de passe sont incorrectes';
-              alert(error);
            }
          );
 
@@ -97,6 +100,7 @@ export class SignInPage {
              let accessToken=response.authResponse.accessToken;
              let params = new Array();
              //Getting user information
+            
              Facebook.api("/me?fields=name,gender,age_range,first_name,last_name", params)
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
@@ -109,21 +113,6 @@ export class SignInPage {
            });
        }
   }
-  /*logout(){
-   this.connected=false;
-   this.aclService.data.roles=[];
-   this.aclService.data.abilities=[];
-
- }*/
- //This function will store Abilities and Roles to AclService
- setAbilitiesAndRolesToAcl(abilities,roles){
-   //setting abilities to AclService
-   this.aclService.setAbilities(abilities);
-   //fetching and attaching all user roles to AclService
-   roles.forEach(role => {
-               this.aclService.attachRole(role);        
-   });
- }
 
  presentToast() {
    let toast = this.toastCtrl.create({
@@ -139,7 +128,7 @@ export class SignInPage {
    alert('Termes & Conditions page');
  }
 
-  checkStatusChangeCallback(){
+ checkStatusChangeCallback(){
       //alert('Checking the Status Changes');
   }
   disconnectFromFacebook(){
@@ -200,21 +189,7 @@ export class SignInPage {
   }
   //Google+ login native Oauth
   googlePlusNativeConnect(){
-    
-    //We use the login static function of GooglePlus
-    /**
-     * options in this function are:
-     * scopes
-     * webClientId: which is the client id attached to a web application in your Google console's project
-     * offline mode is a configuration used with the webClientId to get the serverAuthCode and the tokenId from the serverAuthCode
-     */
-     GooglePlus.login({
-      "scopes":"",
-      "webClientId": "436973074865-3m1eif3ip5629oafl0fsldsptfp0pkrk.apps.googleusercontent.com",
-      "offline": true
-    }).then((data) => {
-        //alert(JSON.stringify(data));
-        /*alert("ServerAuthCode to send to the api= "+data.serverAuthCode);*/
+     this.Auth.loginWithGoogle().then((data) => {
         /**
          * Data response contains multiple field
          * data.email          // 'hamzaouimounir@example.com'
@@ -227,11 +202,10 @@ export class SignInPage {
          * data.serverAuthCode // Auth code that can be exchanged for an access token and refresh token for offline access
          */
         //GooglePlusService is a local provider that emit a HTTP/POST request to this endpoint https://www.googleapis.com/oauth2/v4/token in order to get the accessToken using serverAuthCode
-        this.gplusService.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
+        this.Auth.getAccessTokenFromServerAuthCode(data.serverAuthCode).subscribe(
          data => {
-          // alert(JSON.stringify(data));
         //retreiving the accessToken in this response and send it to the oauthLoginApiRequest which is a function that call the Laravel API endpoint using the provider name ='google' and the accessToken param
-                this.oauthLoginApiRequest('google',data.access_token);
+               this.oauthLoginApiRequest('google',data.access_token);
         },
         err => alert("Err=> "+err),
         () => alert('Success Connexion')
@@ -242,60 +216,40 @@ export class SignInPage {
   }
   //Logout from Google
   disconnectFromGoogle(){
-    GooglePlus.logout().then(()=>{
+    this.Auth.logoutFromGoogle().then(()=>{
       alert('disconnected');
        this.connected=false;
     });
 
   }
-  //This function use the sattelizer Oauth operation using the provider's name as a param
-  sattelizerOauth(provider){
-    //you can use this method till 20th april then the integrated based Oauth for Google Plus will be blocked
-      this.auth.authenticate(provider).subscribe({
-                next: (user) => {
-                  console.log(JSON.stringify(user))
-                },
-                error: (err: any) => alert("error"+err),
-                complete: () => console.log('connected')
-            });
-
-  }
   //this private function will be called after Oauth Facebook or Google connexion to send the accessToken to the Laravel API
   private oauthLoginApiRequest(providerName,accessToken){
-    
     let callback=this.API.all('auth').all(providerName).one(accessToken);
         callback.get().subscribe(
           (callbackResponse)=>{
-            //alert("Connected on "+providerName+" provider");
-            //alert(JSON.stringify(callbackResponse.data.original.data));
-            this.handleDeviceNotificationToken(callbackResponse.data.original.data.user.id);
-            this.setAbilitiesAndRolesToAcl(callbackResponse.data.original.data.abilities,callbackResponse.data.original.data.userRole);
-            //alert("satellizer_token = "+callbackResponse.data.original.data.token);
-            this.storage.set('satellizer_token',callbackResponse.data.original.data.token);
+            alert("Connected on "+providerName+" provider");
+            alert(JSON.stringify(callbackResponse));
+            this.Auth.registerDeviceNotificationToken(callbackResponse.data.user.id);
+            let credentials={
+                id:callbackResponse.data.user.id,
+                authType:providerName,
+                requestToken:callbackResponse.data.token
+            }
             
+            this.Auth.storeUserCredentials(credentials)
+            this.Auth.setAbilitiesAndRolesToAcl(callbackResponse.data.abilities,callbackResponse.data.userRole);
+            this.goToHomePage();
           },
           (error)=>alert(error)
         );
   }
 
   private goToHomePage(){
+    
     this.navCtrl.setRoot(HomePage);
   }
-  handleDeviceNotificationToken(userID){
-     //alert('this is users id='+userID );
-     FirebasePlugin.getToken((token) =>{
-                    // save this server-side and use it to push notifications to this device
-                    //alert("Firebase Token: "+token);
-                    let refreshCallback=this.API.all('notifications').all('refresh_token').all(userID).one(token);
-                    refreshCallback.get().subscribe(
-                      (response)=>{
-                        //alert(JSON.stringify(response));
-                        this.goToHomePage();
-                      }
-                    );
-                }, (error) =>{
-                    alert("Error: "+error);
-                });
-    }
-    
+  
+
+
+
 }

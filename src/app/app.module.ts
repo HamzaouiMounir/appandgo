@@ -1,5 +1,5 @@
 import {  Storage } from '@ionic/storage';
-import { GooglePlusService } from './../providers/google-plus-service';
+import { AuthentificationService } from './../providers/authentification-service';
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
@@ -50,6 +50,6 @@ const cloudSettings: CloudSettings = {
     SignUpPage,
     HomePage
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,GooglePlusService]
+  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,AuthentificationService]
 })
 export class AppModule {}
