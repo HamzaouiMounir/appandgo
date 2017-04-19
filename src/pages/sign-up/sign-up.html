@@ -4,55 +4,56 @@
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
-
-  <ion-navbar>
-    <ion-title>Inscription</ion-title>
-  </ion-navbar>
-
-</ion-header>
 
 
 <ion-content padding>
+    <img id="logo" src="assets/img/logo.png">
+     <h4 class="title">Inscription</h4>
   <form [formGroup]="registrationForm" >
-    <ion-list>
-
-      <ion-item>
-        <ion-label floating color="primary">Nom complet</ion-label>
-        <ion-input type="text" formControlName="name"></ion-input>
-
-      </ion-item>
-      <ion-item *ngIf="!registrationForm.controls['name'].valid && (registrationForm.controls['name'].dirty || formSubmited)">
-          <p color="danger">Le nom doit avoir 3 caractères au minimum</p>
-      </ion-item>
-      <ion-item>
-        <ion-label floating color="primary">Email</ion-label>
-        <ion-input type="email" formControlName="email"></ion-input>
-
-      </ion-item>
-      <ion-item *ngIf="!registrationForm.controls['email'].valid && (registrationForm.controls['email'].dirty || formSubmited)">
-          <p color="danger">Adresse mail invalide</p>
-      </ion-item>
-      <ion-item>
-        <ion-label floating color="primary">Mot de passe</ion-label>
-        <ion-input type="password" formControlName="password"></ion-input>
-      </ion-item>
-      <ion-item *ngIf="!registrationForm.controls['password'].valid && (registrationForm.controls['password'].dirty || formSubmited)">
-          <p color="danger">Vous devez entrer 8 caractères au minimum</p>
-      </ion-item>
-      <ion-item>
-        <ion-label floating color="primary">Confirmer votre mot de passe</ion-label>
-        <ion-input type="password" formControlName="password_confirmation"></ion-input>
-      </ion-item>
-      <ion-item *ngIf="registrationForm.controls['password'].value!=registrationForm.controls['password_confirmation'].value && registrationForm.controls['password_confirmation'].valid">
-          <p color="danger">Mots de passe non identiques</p>
-      </ion-item>
-      <ion-item *ngIf="registrationForm.controls['password'].value==registrationForm.controls['password_confirmation'].value && registrationForm.controls['password_confirmation'].valid">
-          <p color="secondary">Mots de passe  identiques</p>
-      </ion-item>
-    </ion-list>
-    <div padding>
-      <button ion-button (click)="register()" full color="danger">Créer mon compte</button>
-    </div>
+    <ion-grid>
+      <ion-row>
+        <ion-item>
+          <ion-label floating color="light">Nom complet</ion-label>
+          <ion-input type="text" formControlName="name"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!registrationForm.controls['name'].valid && (registrationForm.controls['name'].dirty || formSubmited)">
+            <p color="danger">Le nom doit avoir 3 caractères au minimum</p>
+        </ion-item>
+      </ion-row>
+      <ion-row>
+        <ion-item>
+          <ion-label floating color="light">Email</ion-label>
+          <ion-input type="email" formControlName="email"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!registrationForm.controls['email'].valid && (registrationForm.controls['email'].dirty || formSubmited)">
+            <p color="danger">Adresse mail invalide</p>
+        </ion-item>
+      </ion-row>
+      <ion-row>
+        <ion-item>
+          <ion-label floating color="light">Mot de passe</ion-label>
+          <ion-input type="password" formControlName="password"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!registrationForm.controls['password'].valid && (registrationForm.controls['password'].dirty || formSubmited)">
+            <p color="danger">Vous devez entrer 8 caractères au minimum</p>
+        </ion-item>
+      </ion-row>
+      <ion-row>
+        <ion-item>
+          <ion-label floating color="light">Confirmer votre mot de passe</ion-label>
+          <ion-input type="password" formControlName="password_confirmation"></ion-input>
+        </ion-item>
+        <ion-item *ngIf="registrationForm.controls['password'].value!=registrationForm.controls['password_confirmation'].value && registrationForm.controls['password_confirmation'].valid">
+            <p color="danger">Mots de passe non identiques</p>
+        </ion-item>
+        <ion-item *ngIf="registrationForm.controls['password'].value==registrationForm.controls['password_confirmation'].value && registrationForm.controls['password_confirmation'].valid">
+            <p color="secondary">Mots de passe  identiques</p>
+        </ion-item>
+      </ion-row>
+    <ion-row padding>
+        <button ion-button (click)="register()" full color="normal">Créer mon compte</button>
+    </ion-row>
+    </ion-grid>
   </form>
+   <a href="#" left class="links" (click)="returnToLoginPage()">J'ai déjà un compte</a>
 </ion-content>

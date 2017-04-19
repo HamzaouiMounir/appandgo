@@ -4,6 +4,7 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Rx';
 import { Restangular } from 'ng2-restangular';
+import {GlobalConfig} from './global-config';
 
 //This provider will handle the restangular configuration
 @Injectable()
@@ -12,8 +13,8 @@ export class ApiService extends Restangular{
   public static token='';
  static RestangularConfigFactory (RestangularProvider) {
 
- RestangularProvider.setBaseUrl('http://192.168.1.6:3000/api/');
- RestangularProvider.setDefaultHeaders({'Content-Type': 'application/json'});
+ RestangularProvider.setBaseUrl(GlobalConfig.API_BASE_URL);
+ RestangularProvider.setDefaultHeaders(GlobalConfig.RESTANGULAR_DEFAULT_HEADER);
  // This function must return observable
  var refreshAccesstoken = function () {
    // Here you can make action before repeated request

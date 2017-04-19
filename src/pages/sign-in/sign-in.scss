@@ -2,20 +2,44 @@ page-sign-in {
     
 ion-content{
     background-color: transparent;
-    background-image: url('https://s-media-cache-ak0.pinimg.com/736x/87/cc/a0/87cca0ec40ea3157c56e5c5d98581917.jpg');
+    background-image: url('../assets/img/landing.jpg');
+    
     background-repeat: no-repeat;
     background-size: cover;
 }
-.inputs{
+.inputs,.item{
     background-color: transparent;
     color:white;
+}
+.item{
+    border-color: transparent;
 }
 .links{
     color:#f5d63d;
     text-decoration: none;
+    font-weight: bold;
 }
-#logo{
-    
-    height: 150px;
-}
+    #logo{
+        padding: 0;
+        height: 22vh !important;
+        width: 22vh !important;
+        margin-left: 17vh !important;    
+        margin-bottom: 0;
+        text-align: center; 
+    }
+    .title{
+        color: whitesmoke;
+         text-align: center;   
+        font-weight: bold;  
+    }
+    .or{
+        color: whitesmoke;
+        margin-left: 25vh !important;   
+        margin-bottom: 0;
+        margin-top:0; 
+    }
+    .formGrid{
+        padding-top: 0vh;
+        margin: 0;
+    }
 }

@@ -41,15 +41,15 @@ export class HomePage {
   private Auth:AuthentificationService,
   private storage:Storage) {
       this.storage.get('satellizer_token').then((value)=>{
-       alert('requestToken='+value);
+       //alert('requestToken='+value);
        this.satellizerToken=value;
     })
        this.storage.get('authType').then((value)=>{
-       alert('authType='+value);
+       //alert('authType='+value);
        this.authType=value;
     })
     this.storage.get('id').then((value)=>{
-       alert('userid='+value);
+       //alert('userid='+value);
        this.userid=value;
     })
     if(this.authType=='facebook'){
@@ -64,7 +64,7 @@ export class HomePage {
     
   }
   load(){
-    alert('this is the request token:'+this.satellizerToken);
+    //alert('this is the request token:'+this.satellizerToken);
     let loading=this.loader.create({
        content:'Chargement des données...'
      });
@@ -88,7 +88,7 @@ export class HomePage {
                 
             },
             ()=>{
-              alert('finish');
+              //alert('finish');
               loading.dismiss();
             });
               
@@ -126,14 +126,14 @@ export class HomePage {
    alert(this.authType);
     switch(this.authType){
       case 'google': 
-      alert('You are disconnecting from your '+this.authType+' account linked to APP and GO starter app');
+      //alert('You are disconnecting from your '+this.authType+' account linked to APP and GO starter app');
       this.Auth.logoutFromGoogle().then(()=>{
         alert('Bye Bye');
         this.Auth.resetUserCredentials();
       })
       break;
       case 'facebook':
-      alert('You are disconnecting from your '+this.authType+' account linked to APP and GO starter app');
+      //alert('You are disconnecting from your '+this.authType+' account linked to APP and GO starter app');
       
       Facebook.logout().then((facebookDisconnectionResponse)=>{
             alert('Bye Bye');
@@ -144,7 +144,7 @@ export class HomePage {
       this.Auth.resetUserCredentials();
       break;
       default:
-      alert('You are disconnecting from your APP and GO account');
+      //alert('You are disconnecting from your APP and GO account');
       alert('Bye Bye');
         this.Auth.resetUserCredentials();
       break;

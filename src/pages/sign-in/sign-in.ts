@@ -1,6 +1,5 @@
 import { Storage } from '@ionic/storage';
 import { HomePage } from './../home/home';
-import { GooglePlusService } from './../../providers/google-plus-service';
 import { AuthentificationService } from './../../providers/authentification-service';
 import { Component } from '@angular/core';
 import { NavController, NavParams, ToastController, LoadingController,ViewController} from 'ionic-angular';
@@ -8,11 +7,8 @@ import { AclService } from 'angular2-acl';
 import { ApiService } from './../../providers/api-service';
 import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
-import { GooglePlus } from 'ionic-native';
-import {
-  Push,
-  PushToken
-} from '@ionic/cloud-angular';
+import {ResetPasswordPage} from '../reset-password/reset-password';
+import {GlobalConfig} from './../../providers/global-config';
  declare var FirebasePlugin;
 @Component({
   selector: 'page-sign-in',
@@ -20,14 +16,14 @@ import {
 })
 export class SignInPage {
  user ={
-   email:'test3@test.com',
-   password:'testtest'
+   email:'',
+   password:''
  };
  userinfo={};
  error='';
  connected=false;
  idToken='';
- FB_APP_ID: number = 1368002846591785;
+ FB_APP_ID: number = GlobalConfig.FB_APP_ID;
   constructor(
     public viewCtrl:ViewController,
     public navCtrl: NavController,
@@ -37,8 +33,7 @@ export class SignInPage {
     public aclService:AclService,
     public loader:LoadingController,
     private Auth:AuthentificationService,
-    private storage:Storage,
-    public push: Push) {
+    private storage:Storage) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
     this.storage.remove('satellizer_token');
@@ -92,7 +87,7 @@ export class SignInPage {
            //Connexion à Facebook
            let permissions = new Array();
            //the permissions your facebook app needs from the user
-           permissions = ["public_profile"];
+           permissions = GlobalConfig.FACEBOOK_PERMISSIONS;
            Facebook.login(permissions)
            .then((response)=>{
              //alert("**ACCESS TOKEN =**"+JSON.stringify(response.authResponse.accessToken));
@@ -101,11 +96,10 @@ export class SignInPage {
              let params = new Array();
              //Getting user information
             
-             Facebook.api("/me?fields=name,gender,age_range,first_name,last_name", params)
+             Facebook.api(GlobalConfig.FACEBOOK_API_REQUEST_PATH, params)
              .then((user) =>{
                user.picture = "https://graph.facebook.com/" + userId + "/picture?type=large";
-               //console.log(JSON.stringify(user));
-
+               //console.log(JSON.stringify(user))
                  this.oauthLoginApiRequest('facebook',accessToken);
              })
            }, (error)=>{
@@ -125,7 +119,7 @@ export class SignInPage {
    this.navCtrl.push(SignUpPage);
  }
  goToTermsAndConditions(){
-   alert('Termes & Conditions page');
+   this.navCtrl.push(ResetPasswordPage);
  }
 
  checkStatusChangeCallback(){
@@ -224,11 +218,16 @@ export class SignInPage {
   }
   //this private function will be called after Oauth Facebook or Google connexion to send the accessToken to the Laravel API
   private oauthLoginApiRequest(providerName,accessToken){
-    let callback=this.API.all('auth').all(providerName).one(accessToken);
+     let loading=this.loader.create({
+       content:'Connexion avec votre compte '+providerName+' en cours...'
+     });
+     loading.present()
+     .then(()=>{
+        let callback=this.API.all('auth').all(providerName).one(accessToken);
         callback.get().subscribe(
           (callbackResponse)=>{
-            alert("Connected on "+providerName+" provider");
-            alert(JSON.stringify(callbackResponse));
+            //alert("Connected on "+providerName+" provider");
+            //alert(JSON.stringify(callbackResponse));
             this.Auth.registerDeviceNotificationToken(callbackResponse.data.user.id);
             let credentials={
                 id:callbackResponse.data.user.id,
@@ -239,9 +238,16 @@ export class SignInPage {
             this.Auth.storeUserCredentials(credentials)
             this.Auth.setAbilitiesAndRolesToAcl(callbackResponse.data.abilities,callbackResponse.data.userRole);
             this.goToHomePage();
+            loading.dismiss();
           },
           (error)=>alert(error)
         );
+     })
+     .catch((err=>{
+        alert('Connexion échouée, veuillez réessayer');
+        loading.dismiss();
+     }))
+    
   }
 
   private goToHomePage(){

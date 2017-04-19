@@ -3,6 +3,7 @@ import {FormBuilder,FormGroup,Validators,FormControl} from '@angular/forms';
 import { NavController, NavParams , ToastController, LoadingController} from 'ionic-angular';
 import { ApiService } from './../../providers/api-service';
 import {EmailValidator} from '../../validators/email-validator';
+import {SignInPage} from '../sign-in/sign-in';
 /*
   Generated class for the SignUp page.
 
@@ -62,4 +63,7 @@ export class SignUpPage {
     toast.present();
   }
 
+  returnToLoginPage(){
+    this.navCtrl.setRoot(SignInPage);
+  }
 }
