@@ -22,4 +22,32 @@ npm install
   
 ```
 ### Notes about Ionic Build
-This application is linked to a list
+This application is linked to a list of apis endpoint built in laravel for personal use, you can change your base URL in the ApiService Provider and use Restangular request operations to reach your endpoints.
+
+## How to run the application 
+- On your browser
+```
+ionic serve -l(optional)
+  
+```
+- On your android/ios emulator
+
+```
+ionic platform add android
+ionic platform add ios 
+ionic emulate android 
+ionic emulate ios
+```
+Attention: 
+- To make sure that firebase notification messages are enabled
+1- Go to [Firebase Console](https://console.firebase.google.com).
+2- Create a new project.
+3- Go to project settings and add android/ios app 
+4- Make sure to put the application package name that you can find in the config.xml
+5- Download GoogleServices-info.plist (for iOS) and GoogleServices.json (for Android)
+6- Put these files under your_project_path 
+
+#License
+```
+Copyright (c) 2017 Mounir Hamzaoui- APP and GO
+```
