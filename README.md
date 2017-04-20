@@ -1,7 +1,7 @@
 # APP and GO Starter APP
-This application is considered as a boilerplate that uses the best practices of Angular2 and Ionic2 Frameworks. 
+This application is considered as a boilerplate that uses the best practices of Angular2 and Ionic2 Frameworks development process. 
 ## Features
-- [Ionic2] (https://ionicframework.com/docs/)
+- [Ionic Framework v2](https://ionicframework.com/docs/)
 - [Angular 2](https://angular.io/)
 - [angular2-acl](https://github.com/jsrockstar132/angular2-acl) Role-based permissions for AngularJS 2
 - [ng2-restangular](https://github.com/2muchcoffeecom/ng2-restangular) Angular 2 service that simplifies common GET, POST, DELETE, and UPDATE requests
