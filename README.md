@@ -40,14 +40,15 @@ ionic emulate ios
 ```
 Attention: 
 - To make sure that firebase notification messages are enabled
-1- Go to [Firebase Console](https://console.firebase.google.com).
-2- Create a new project.
-3- Go to project settings and add android/ios app 
-4- Make sure to put the application package name that you can find in the config.xml
-5- Download GoogleServices-info.plist (for iOS) and GoogleServices.json (for Android)
-6- Put these files under your_project_path 
+1. Go to [Firebase Console](https://console.firebase.google.com).
+2. Create a new project.
+3. Go to project settings and add android/ios app 
+4. Make sure to put the application package name that you can find in the config.xml
+5. Download GoogleServices-info.plist (for iOS) and GoogleServices.json (for Android)
+6. Put these files under your_project_path 
 
 #License
+
 ```
 Copyright (c) 2017 Mounir Hamzaoui- APP and GO
 ```
