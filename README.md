@@ -46,6 +46,7 @@ Attention:
 4. Make sure to put the application package name that you can find in the config.xml
 5. Download GoogleServices-info.plist (for iOS) and GoogleServices.json (for Android)
 6. Put these files under your_project_path 
+7. Build your project
 
 #License
 
