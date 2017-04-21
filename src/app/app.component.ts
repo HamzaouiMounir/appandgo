@@ -5,6 +5,7 @@ import { Storage } from '@ionic/storage';
 import {SignInPage} from '../pages/sign-in/sign-in';
 import { HomePage } from '../pages/home/home';
 import {ResetPasswordPage} from '../pages/reset-password/reset-password';
+import {PasswordConfigurationPage} from '../pages/password-configuration/password-configuration';
 import { Keyboard } from 'ionic-native';
 @Component({
   templateUrl: 'app.html'

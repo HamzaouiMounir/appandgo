@@ -9,6 +9,8 @@ import {Facebook} from 'ionic-native';
 import {SignUpPage} from '../sign-up/sign-up';
 import {ResetPasswordPage} from '../reset-password/reset-password';
 import {GlobalConfig} from './../../providers/global-config';
+import {PasswordConfigurationPage} from '../password-configuration/password-configuration';
+
  declare var FirebasePlugin;
 @Component({
   selector: 'page-sign-in',
@@ -226,18 +228,34 @@ export class SignInPage {
         let callback=this.API.all('auth').all(providerName).one(accessToken);
         callback.get().subscribe(
           (callbackResponse)=>{
-            //alert("Connected on "+providerName+" provider");
-            //alert(JSON.stringify(callbackResponse));
-            this.Auth.registerDeviceNotificationToken(callbackResponse.data.user.id);
+            alert("Connected on "+providerName+" provider");
+            alert(JSON.stringify(callbackResponse));
+            //check if the user is verified
+            let verified = callbackResponse.data.user.email_verified;
             let credentials={
-                id:callbackResponse.data.user.id,
-                authType:providerName,
-                requestToken:callbackResponse.data.token
+                  id:callbackResponse.data.user.id,
+                  authType:providerName,
+                  requestToken:callbackResponse.data.token
+              }
+            if(verified==0){
+              //we have to push the user's mail to password-verification page in order to configure it's own password
+              this.navCtrl.push(PasswordConfigurationPage,{
+                                                            email:callbackResponse.data.user.email,
+                                                            name:callbackResponse.data.user.name,
+                                                            token:callbackResponse.data.token,
+                                                            abilities:callbackResponse.data.abilities,
+                                                            userRole:callbackResponse.data.userRole,
+                                                            credentials:credentials
+                                                          });
+           }else{
+              this.Auth.registerDeviceNotificationToken(callbackResponse.data.user.id);
+              
+            
+              this.Auth.storeUserCredentials(credentials)
+              this.Auth.setAbilitiesAndRolesToAcl(callbackResponse.data.abilities,callbackResponse.data.userRole);
+              this.goToHomePage();
             }
             
-            this.Auth.storeUserCredentials(credentials)
-            this.Auth.setAbilitiesAndRolesToAcl(callbackResponse.data.abilities,callbackResponse.data.userRole);
-            this.goToHomePage();
             loading.dismiss();
           },
           (error)=>alert(error)

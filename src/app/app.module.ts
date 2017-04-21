@@ -7,6 +7,7 @@ import {SignInPage} from '../pages/sign-in/sign-in';
 import {SignUpPage} from '../pages/sign-up/sign-up';
 import {HomePage} from '../pages/home/home';
 import {ResetPasswordPage} from '../pages/reset-password/reset-password';
+import {PasswordConfigurationPage} from '../pages/password-configuration/password-configuration';
 import { AclService } from 'angular2-acl';
 import { ApiService } from './../providers/api-service';
 import { RestangularModule } from 'ng2-restangular';
@@ -19,7 +20,8 @@ import {SatellizerService} from '../providers/satellizer-service';
     SignInPage,
     SignUpPage,
     HomePage,
-    ResetPasswordPage
+    ResetPasswordPage,
+    PasswordConfigurationPage
   ],
   imports: [
     IonicModule.forRoot(MyApp
@@ -42,7 +44,8 @@ import {SatellizerService} from '../providers/satellizer-service';
     SignInPage,
     SignUpPage,
     HomePage,
-    ResetPasswordPage
+    ResetPasswordPage,
+    PasswordConfigurationPage
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},AclService,Storage,ApiService,AuthentificationService]
 })

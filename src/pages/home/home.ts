@@ -6,10 +6,6 @@ import { Storage } from '@ionic/storage';
 import { AuthentificationService } from './../../providers/authentification-service';
 import { GlobalConfig } from './../../providers/global-config';
 import {Facebook} from 'ionic-native';
-import {
-  Push,
-  PushToken
-} from '@ionic/cloud-angular';
 import {SignInPage} from '../sign-in/sign-in';
 
 /*
@@ -37,7 +33,6 @@ export class HomePage {
   private aclService:AclService,
   public loader:LoadingController,
   public toastCtrl: ToastController,
-  public push: Push,
   private Auth:AuthentificationService,
   private storage:Storage) {
       this.storage.get('satellizer_token').then((value)=>{

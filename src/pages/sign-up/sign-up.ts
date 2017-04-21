@@ -4,12 +4,7 @@ import { NavController, NavParams , ToastController, LoadingController} from 'io
 import { ApiService } from './../../providers/api-service';
 import {EmailValidator} from '../../validators/email-validator';
 import {SignInPage} from '../sign-in/sign-in';
-/*
-  Generated class for the SignUp page.
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
 @Component({
   selector: 'page-sign-up',
   templateUrl: 'sign-up.html'
