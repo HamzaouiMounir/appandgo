@@ -258,7 +258,7 @@ export class SignInPage {
             
             loading.dismiss();
           },
-          (error)=>alert(error)
+          (error)=>alert('error')
         );
      })
      .catch((err=>{

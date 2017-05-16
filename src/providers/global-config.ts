@@ -19,7 +19,7 @@ export class GlobalConfig {
   public static FACEBOOK_PERMISSIONS=["public_profile"];
   public static FACEBOOK_API_REQUEST_PATH='/me?fields=name,gender,age_range,first_name,last_name';
   /* Begin Restangular Config Vars */
-  public static API_BASE_URL='http://192.168.1.6:3000/api/';
+  public static API_BASE_URL='http://192.168.1.9:3000/api/';
   public static RESTANGULAR_DEFAULT_HEADER={'Content-Type': 'application/json'};
   /* End Restangular Config Vars */
 }
