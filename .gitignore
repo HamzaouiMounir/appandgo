@@ -11,7 +11,7 @@ log.txt
 *.sublime-workspace
 .vscode/
 npm-debug.log*
-
+src/providers/global-config.ts
 .idea/
 .sass-cache/
 .tmp/
