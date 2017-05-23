@@ -7,6 +7,9 @@ import { AuthentificationService } from './../../providers/authentification-serv
 import { GlobalConfig } from './../../providers/global-config';
 import {Facebook} from 'ionic-native';
 import {SignInPage} from '../sign-in/sign-in';
+import {TechnicianPassage} from './../../models/technician-passage';
+import {Passage} from './../../models/passage';
+import {AngularFire, FirebaseListObservable} from 'angularfire2';
 
 /*
   Generated class for the Home page.
@@ -26,6 +29,9 @@ export class HomePage {
   satellizerToken;
   authType:any;
   userid:any;
+ passages: FirebaseListObservable<any[]>;
+ techPassage: FirebaseListObservable<TechnicianPassage[]>;
+ psgs:any=[];
   constructor(public navCtrl: NavController, 
   public viewCtrl:ViewController,
   public navParams: NavParams,
@@ -34,7 +40,8 @@ export class HomePage {
   public loader:LoadingController,
   public toastCtrl: ToastController,
   private Auth:AuthentificationService,
-  private storage:Storage) {
+  private storage:Storage,
+  af: AngularFire) {
       this.storage.get('satellizer_token').then((value)=>{
        //alert('requestToken='+value);
        this.satellizerToken=value;
@@ -45,11 +52,40 @@ export class HomePage {
     })
     this.storage.get('id').then((value)=>{
        //alert('userid='+value);
+       if(value!=null)
        this.userid=value;
     })
+    this.userid=227;
     if(this.authType=='facebook'){
         Facebook.browserInit(GlobalConfig.FB_APP_ID);
     }
+
+    
+    this.techPassage = af.database.list('/technician_passages');
+    this.techPassage.forEach(techP=>{
+      console.log('UPDATED');
+      if(techP.length==0){
+        this.passages=null;
+        console.log("there is no passage")
+      }else{
+        this.psgs=[]
+            for(let e of techP){
+                console.log(e.id_technician,this.userid);
+                if(e.id_technician==this.userid){
+                  af.database.list('/passages',{
+                    query:{
+                      orderByChild:'id',
+                      equalTo:e.id_passage
+                    }
+                  }).subscribe((snapshot)=>{
+                    this.psgs.push(snapshot[0]);
+                  });
+                }
+              }
+      }
+      
+    })
+    
     
   }
   ngOnInit(){

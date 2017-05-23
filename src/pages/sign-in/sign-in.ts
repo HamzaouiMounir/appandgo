@@ -35,10 +35,13 @@ export class SignInPage {
     public aclService:AclService,
     public loader:LoadingController,
     private Auth:AuthentificationService,
-    private storage:Storage) {
+    private storage:Storage,
+    ) {
     Facebook.browserInit(this.FB_APP_ID);
     //Here we have to trySilentLogin for Google and/or Facebook Oauth to see if the user has been logged in or no
     this.storage.remove('satellizer_token');
+    
+  
     
 }
 

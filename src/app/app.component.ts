@@ -20,14 +20,15 @@ export class MyApp {
       if (platform.is('android')) {
                 Keyboard.disableScroll(true);
         }
-      this.storage.get('satellizer_token').then((token)=>{
+      /*this.storage.get('satellizer_token').then((token)=>{
         console.log("From rooting : "+token)
         if(token!=null){
           this.rootPage=HomePage;
         }else{
           this.rootPage=SignInPage;
         }
-      })
+      })*/
+       this.rootPage=HomePage;
       StatusBar.hide();
       Splashscreen.hide();
 

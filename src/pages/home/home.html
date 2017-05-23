@@ -8,18 +8,19 @@
 
   <ion-navbar color="newColor" >
     <ion-title light><b>APP and GO</b> Admin</ion-title>
-    <ion-buttons end>
-       <!--Here we will add actions-->
-      </ion-buttons>
+     <ion-buttons end>
+          <button ion-button (click)="logout()"  color="light" ><ion-icon name="contact" style="font-size: 2em;"></ion-icon></button>
+     </ion-buttons>
   </ion-navbar>
-
+ 
 </ion-header>
 
 
 <ion-content >
 
+   
       <button ion-button (click)="load()"  color="newColor">Get me</button>
-      <button ion-button (click)="logout()"  color="red700">Logout</button>
+    
   <ion-card *ngIf="loaded">
 
   <ion-item>
@@ -78,4 +79,13 @@
       <button ion-button type="submit" full color="newColor">Enregistrer</button>
     </div>
 </form>
+
+
+<ion-card *ngFor="let passage of psgs">
+
+  <h2>{{passage.title}}</h2>
+  <ion-card-content>
+    <p>{{passage.description}}</p>
+  </ion-card-content>
+</ion-card>
 </ion-content>
